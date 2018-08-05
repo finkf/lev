@@ -145,6 +145,18 @@ func (l *Lev) calculateBacktrace() Backtrace {
 	return b.reverse()
 }
 
+// Validate returns an error if the backtrace is not valid.
+func (b Backtrace) Validate() error {
+	for _, op := range b {
+		switch op {
+		case Del, Ins, Sub, Nop:
+		default:
+			return fmt.Errorf("invalid edit operation %c", op)
+		}
+	}
+	return nil
+}
+
 func (b Backtrace) String() string {
 	return string(b)
 }

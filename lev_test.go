@@ -57,6 +57,26 @@ func TestLevBacktrace(t *testing.T) {
 	}
 }
 
+func TestBacktraceValidate(t *testing.T) {
+	tests := []struct {
+		backtrace string
+		ok        bool
+	}{
+		{"||#-#+", true},
+		{"||#-xx+", false},
+	}
+	for _, tc := range tests {
+		t.Run(tc.backtrace, func(t *testing.T) {
+			err := lev.Backtrace(tc.backtrace).Validate()
+			if tc.ok && err != nil {
+				t.Fatalf("got error %v", err)
+			}
+			if !tc.ok && err == nil {
+				t.Fatalf("unexpected error %v", err)
+			}
+		})
+	}
+}
 func TestLevString(t *testing.T) {
 	tests := []struct {
 		s1, s2, want string
