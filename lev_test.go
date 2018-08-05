@@ -64,6 +64,7 @@ func TestBacktraceValidate(t *testing.T) {
 	}{
 		{"||#-#+", true},
 		{"||#-xx+", false},
+		{"", true},
 	}
 	for _, tc := range tests {
 		t.Run(tc.backtrace, func(t *testing.T) {
