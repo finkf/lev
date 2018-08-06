@@ -191,8 +191,6 @@ func (l *Lev) Alignment(d int, b Trace) (Alignment, error) {
 	var b1, b2 bytes.Buffer
 	i, j := 0, 0
 	for _, c := range b {
-		if i >= len(l.s1) || j >= len(l.s2) {
-		}
 		switch c {
 		case Nop, Sub:
 			if i >= len(l.s1) || j >= len(l.s2) {
