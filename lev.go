@@ -123,6 +123,8 @@ const (
 	Ins = byte('+')
 	// Nop marks a non-edit operation.
 	Nop = byte('|')
+	// Mis marks a missing character in s1 or s2.
+	Mis = byte('~')
 )
 
 // Backtrace returns the edit distance between the two given strings
@@ -173,4 +175,43 @@ func max(m, n int) int {
 		return m
 	}
 	return n
+}
+
+// Alignment captures the alignment of two strings with
+// the accoriding backtrace of edit operations.
+type Alignment struct {
+	S1, S2, Backtrace string
+	Distance          int
+}
+
+// Alignment returns the given alignment strings and the according
+// backtrace.
+func (l *Lev) Alignment(d int, b Backtrace) (Alignment, error) {
+	a := Alignment{Distance: d}
+	if err := b.Validate(); err != nil {
+		return a, err
+	}
+	if len(l.s1) != len(b) && len(l.s2) != len(b) {
+		return a, fmt.Errorf("invalid backtrace")
+	}
+	var b1, b2 bytes.Buffer
+	i, j := 0, 0
+	for _, c := range b {
+		switch c {
+		case Nop, Sub:
+			b1.WriteRune(l.s1[i])
+			b2.WriteRune(l.s2[j])
+			i, j = i+1, j+1
+		case Ins:
+			b1.WriteByte(Mis)
+			b2.WriteRune(l.s2[j])
+			j++
+		case Del:
+			b1.WriteRune(l.s1[i])
+			b2.WriteByte(Mis)
+			i++
+		}
+	}
+	a.S1, a.S2, a.Backtrace = b1.String(), b2.String(), b.String()
+	return a, nil
 }

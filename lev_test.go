@@ -6,7 +6,7 @@ import (
 	"github.com/finkf/lev"
 )
 
-func TestLevCalculate(t *testing.T) {
+func TestCalculate(t *testing.T) {
 	tests := []struct {
 		s1, s2 string
 		want   int
@@ -33,7 +33,7 @@ func TestLevCalculate(t *testing.T) {
 	}
 }
 
-func TestLevBacktrace(t *testing.T) {
+func TestBacktrace(t *testing.T) {
 	tests := []struct {
 		s1, s2, want string
 	}{
@@ -78,7 +78,63 @@ func TestBacktraceValidate(t *testing.T) {
 		})
 	}
 }
-func TestLevString(t *testing.T) {
+
+func TestAlignment(t *testing.T) {
+	tests := []struct {
+		s1, s2 string
+		want   lev.Alignment
+	}{
+		{"", "", lev.Alignment{}},
+		{"abc", "abc", lev.Alignment{
+			Backtrace: "|||", S1: "abc", S2: "abc"}},
+		{"ab", "abc", lev.Alignment{
+			Backtrace: "||+", S1: "ab~", S2: "abc", Distance: 1}},
+		{"abc", "ab", lev.Alignment{
+			Backtrace: "||-", S1: "abc", S2: "ab~", Distance: 1}},
+		{"abc", "abd", lev.Alignment{
+			Backtrace: "||#", S1: "abc", S2: "abd", Distance: 1}},
+		{"", "abc", lev.Alignment{
+			Backtrace: "+++", S1: "~~~", S2: "abc", Distance: 3}},
+		{"abc", "", lev.Alignment{
+			Backtrace: "---", S1: "abc", S2: "~~~", Distance: 3}},
+		{"abc", "xyz", lev.Alignment{
+			Backtrace: "###", S1: "abc", S2: "xyz", Distance: 3}},
+	}
+	for _, tc := range tests {
+		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
+			var l lev.Lev
+			got, err := l.Alignment(l.Backtrace(tc.s1, tc.s2))
+			if err != nil {
+				t.Fatalf("got error: %v", err)
+			}
+			if got != tc.want {
+				t.Fatalf("expected %v; got %v", tc.want, got)
+			}
+		})
+	}
+}
+
+func TestInvalidAlignment(t *testing.T) {
+	tests := []struct {
+		s1, s2    string
+		backtrace lev.Backtrace
+	}{
+		{"abc", "abc", lev.Backtrace("||x")},
+		{"abc", "abc", lev.Backtrace("||||")},
+	}
+	for _, tc := range tests {
+		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
+			var l lev.Lev
+			d := l.EditDistance(tc.s1, tc.s2)
+			_, err := l.Alignment(d, tc.backtrace)
+			if err == nil {
+				t.Fatalf("expected error")
+			}
+		})
+	}
+}
+
+func TestString(t *testing.T) {
 	tests := []struct {
 		s1, s2, want string
 	}{
