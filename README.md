@@ -49,6 +49,6 @@ import(
 func main() {
 	var l lev.Lev
 	a, _ := l.Alignment(l.Trace("abc", "abd"))
-	fmt.Printf("%s\n%s\%s\n", a.S1, a.Trace, a.S2)
+	fmt.Printf("%s\n%s\n%s\n", a.S1, a.Trace, a.S2)
 }
 ```
