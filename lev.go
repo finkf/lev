@@ -188,30 +188,43 @@ type Alignment struct {
 // trace.
 func (l *Lev) Alignment(d int, b Trace) (Alignment, error) {
 	a := Alignment{Distance: d}
-	if err := b.Validate(); err != nil {
-		return a, err
-	}
-	if len(l.s1) != len(b) && len(l.s2) != len(b) {
-		return a, fmt.Errorf("invalid trace: %q", b)
-	}
 	var b1, b2 bytes.Buffer
 	i, j := 0, 0
 	for _, c := range b {
+		if i >= len(l.s1) || j >= len(l.s2) {
+		}
 		switch c {
 		case Nop, Sub:
+			if i >= len(l.s1) || j >= len(l.s2) {
+				return l.alignmentError(b)
+			}
 			b1.WriteRune(l.s1[i])
 			b2.WriteRune(l.s2[j])
 			i, j = i+1, j+1
 		case Ins:
+			if j >= len(l.s2) {
+				return l.alignmentError(b)
+			}
 			b1.WriteByte(Mis)
 			b2.WriteRune(l.s2[j])
 			j++
 		case Del:
+			if i >= len(l.s1) {
+				return l.alignmentError(b)
+			}
 			b1.WriteRune(l.s1[i])
 			b2.WriteByte(Mis)
 			i++
+		default:
+			return l.alignmentError(b)
 		}
 	}
 	a.S1, a.S2, a.Trace = b1.String(), b2.String(), b.String()
 	return a, nil
+}
+
+func (l *Lev) alignmentError(b Trace) (Alignment, error) {
+	var a Alignment
+	return a, fmt.Errorf("align %q, %q: %q",
+		string(l.s1), string(l.s2), b)
 }

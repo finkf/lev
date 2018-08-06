@@ -99,6 +99,9 @@ func TestAlignment(t *testing.T) {
 			Trace: "---", S1: "abc", S2: "~~~", Distance: 3}},
 		{"abc", "xyz", lev.Alignment{
 			Trace: "###", S1: "abc", S2: "xyz", Distance: 3}},
+		{"file://a.txt", "Der alte Mann", lev.Alignment{
+			Trace: "##+++|+|##-|##--", S1: "fi~~~l~e://a.txt",
+			S2: "Der alte M~ann~~", Distance: 13}},
 	}
 	for _, tc := range tests {
 		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
@@ -121,6 +124,8 @@ func TestInvalidAlignment(t *testing.T) {
 	}{
 		{"abc", "abc", lev.Trace("||x")},
 		{"abc", "abc", lev.Trace("||||")},
+		{"abc", "abc", lev.Trace("||--")},
+		{"a", "abc", lev.Trace("++++++")},
 	}
 	for _, tc := range tests {
 		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
