@@ -20,3 +20,18 @@ func main() {
 	fmt.Printf("distance between %q and %q = %d", "abc", "abd", d)
 }
 ```
+### Calculate the backtrace
+```golang
+package main
+
+import(
+	"fmt"
+	"github.com/finkf/lev"
+)
+
+func main() {
+	var l lev.Lev
+	_, b := l.Backtrace("abc", "abd")
+	fmt.Printf("backtrace of %q and %q = %s", "abc", "abd", b)
+}
+```
