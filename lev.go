@@ -192,7 +192,7 @@ func (l *Lev) Alignment(d int, b Trace) (Alignment, error) {
 		return a, err
 	}
 	if len(l.s1) != len(b) && len(l.s2) != len(b) {
-		return a, fmt.Errorf("invalid trace")
+		return a, fmt.Errorf("invalid trace: %q", b)
 	}
 	var b1, b2 bytes.Buffer
 	i, j := 0, 0
