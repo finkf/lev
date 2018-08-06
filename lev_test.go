@@ -33,7 +33,7 @@ func TestCalculate(t *testing.T) {
 	}
 }
 
-func TestBacktrace(t *testing.T) {
+func TestTrace(t *testing.T) {
 	tests := []struct {
 		s1, s2, want string
 	}{
@@ -49,7 +49,7 @@ func TestBacktrace(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
 			var l lev.Lev
-			_, b := l.Backtrace(tc.s1, tc.s2)
+			_, b := l.Trace(tc.s1, tc.s2)
 			if got := b.String(); got != tc.want {
 				t.Fatalf("expected %q; got %q", tc.want, got)
 			}
@@ -57,18 +57,18 @@ func TestBacktrace(t *testing.T) {
 	}
 }
 
-func TestBacktraceValidate(t *testing.T) {
+func TestTraceValidate(t *testing.T) {
 	tests := []struct {
-		backtrace string
-		ok        bool
+		trace string
+		ok    bool
 	}{
 		{"||#-#+", true},
 		{"||#-xx+", false},
 		{"", true},
 	}
 	for _, tc := range tests {
-		t.Run(tc.backtrace, func(t *testing.T) {
-			err := lev.Backtrace(tc.backtrace).Validate()
+		t.Run(tc.trace, func(t *testing.T) {
+			err := lev.Trace(tc.trace).Validate()
 			if tc.ok && err != nil {
 				t.Fatalf("got error %v", err)
 			}
@@ -86,24 +86,24 @@ func TestAlignment(t *testing.T) {
 	}{
 		{"", "", lev.Alignment{}},
 		{"abc", "abc", lev.Alignment{
-			Backtrace: "|||", S1: "abc", S2: "abc"}},
+			Trace: "|||", S1: "abc", S2: "abc"}},
 		{"ab", "abc", lev.Alignment{
-			Backtrace: "||+", S1: "ab~", S2: "abc", Distance: 1}},
+			Trace: "||+", S1: "ab~", S2: "abc", Distance: 1}},
 		{"abc", "ab", lev.Alignment{
-			Backtrace: "||-", S1: "abc", S2: "ab~", Distance: 1}},
+			Trace: "||-", S1: "abc", S2: "ab~", Distance: 1}},
 		{"abc", "abd", lev.Alignment{
-			Backtrace: "||#", S1: "abc", S2: "abd", Distance: 1}},
+			Trace: "||#", S1: "abc", S2: "abd", Distance: 1}},
 		{"", "abc", lev.Alignment{
-			Backtrace: "+++", S1: "~~~", S2: "abc", Distance: 3}},
+			Trace: "+++", S1: "~~~", S2: "abc", Distance: 3}},
 		{"abc", "", lev.Alignment{
-			Backtrace: "---", S1: "abc", S2: "~~~", Distance: 3}},
+			Trace: "---", S1: "abc", S2: "~~~", Distance: 3}},
 		{"abc", "xyz", lev.Alignment{
-			Backtrace: "###", S1: "abc", S2: "xyz", Distance: 3}},
+			Trace: "###", S1: "abc", S2: "xyz", Distance: 3}},
 	}
 	for _, tc := range tests {
 		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
 			var l lev.Lev
-			got, err := l.Alignment(l.Backtrace(tc.s1, tc.s2))
+			got, err := l.Alignment(l.Trace(tc.s1, tc.s2))
 			if err != nil {
 				t.Fatalf("got error: %v", err)
 			}
@@ -116,17 +116,17 @@ func TestAlignment(t *testing.T) {
 
 func TestInvalidAlignment(t *testing.T) {
 	tests := []struct {
-		s1, s2    string
-		backtrace lev.Backtrace
+		s1, s2 string
+		trace  lev.Trace
 	}{
-		{"abc", "abc", lev.Backtrace("||x")},
-		{"abc", "abc", lev.Backtrace("||||")},
+		{"abc", "abc", lev.Trace("||x")},
+		{"abc", "abc", lev.Trace("||||")},
 	}
 	for _, tc := range tests {
 		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
 			var l lev.Lev
 			d := l.EditDistance(tc.s1, tc.s2)
-			_, err := l.Alignment(d, tc.backtrace)
+			_, err := l.Alignment(d, tc.trace)
 			if err == nil {
 				t.Fatalf("expected error")
 			}
