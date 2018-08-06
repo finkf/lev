@@ -111,8 +111,8 @@ func toRunes(str string) []rune {
 // // EditOperation defines the type of an edit operation.
 // type EditOperation byte
 
-// Backtrace defines an array of edit operations.
-type Backtrace []byte
+// Trace defines an array of edit operations.
+type Trace []byte
 
 const (
 	// Del marks a deletion in s2.
@@ -127,16 +127,16 @@ const (
 	Mis = byte('~')
 )
 
-// Backtrace returns the edit distance between the two given strings
-// and the backtrace of the according edit operations.
-func (l *Lev) Backtrace(s1, s2 string) (int, Backtrace) {
+// Trace returns the edit distance between the two given strings
+// and the trace of the according edit operations.
+func (l *Lev) Trace(s1, s2 string) (int, Trace) {
 	d := l.EditDistance(s1, s2)
-	return d, l.calculateBacktrace()
+	return d, l.calculateTrace()
 }
 
-func (l *Lev) calculateBacktrace() Backtrace {
+func (l *Lev) calculateTrace() Trace {
 	length := max(len(l.s1), len(l.s2))
-	b := make(Backtrace, 0, length)
+	b := make(Trace, 0, length)
 	// m = len(l.ws1) + 1, n = len(l.ws2) + 1
 	for i, j := len(l.s1), len(l.s2); i > 0 || j > 0; {
 		_, ii, jj, op := l.argMin(i, j)
@@ -147,8 +147,8 @@ func (l *Lev) calculateBacktrace() Backtrace {
 	return b.reverse()
 }
 
-// Validate returns an error if the backtrace is not valid.
-func (b Backtrace) Validate() error {
+// Validate returns an error if the trace is not valid.
+func (b Trace) Validate() error {
 	for _, op := range b {
 		switch op {
 		case Del, Ins, Sub, Nop:
@@ -159,11 +159,11 @@ func (b Backtrace) Validate() error {
 	return nil
 }
 
-func (b Backtrace) String() string {
+func (b Trace) String() string {
 	return string(b)
 }
 
-func (b Backtrace) reverse() Backtrace {
+func (b Trace) reverse() Trace {
 	for i, j := 0, len(b)-1; i < j; i, j = i+1, j-1 {
 		b[i], b[j] = b[j], b[i]
 	}
@@ -178,21 +178,21 @@ func max(m, n int) int {
 }
 
 // Alignment captures the alignment of two strings with
-// the accoriding backtrace of edit operations.
+// the accoriding trace of edit operations.
 type Alignment struct {
-	S1, S2, Backtrace string
-	Distance          int
+	S1, S2, Trace string
+	Distance      int
 }
 
 // Alignment returns the given alignment strings and the according
-// backtrace.
-func (l *Lev) Alignment(d int, b Backtrace) (Alignment, error) {
+// trace.
+func (l *Lev) Alignment(d int, b Trace) (Alignment, error) {
 	a := Alignment{Distance: d}
 	if err := b.Validate(); err != nil {
 		return a, err
 	}
 	if len(l.s1) != len(b) && len(l.s2) != len(b) {
-		return a, fmt.Errorf("invalid backtrace")
+		return a, fmt.Errorf("invalid trace")
 	}
 	var b1, b2 bytes.Buffer
 	i, j := 0, 0
@@ -212,6 +212,6 @@ func (l *Lev) Alignment(d int, b Backtrace) (Alignment, error) {
 			i++
 		}
 	}
-	a.S1, a.S2, a.Backtrace = b1.String(), b2.String(), b.String()
+	a.S1, a.S2, a.Trace = b1.String(), b2.String(), b.String()
 	return a, nil
 }

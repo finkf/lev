@@ -21,7 +21,7 @@ func main() {
 }
 ```
 
-### Calculate the backtrace of two strings
+### Calculate the trace of two strings
 ```golang
 package main
 
@@ -32,8 +32,8 @@ import(
 
 func main() {
 	var l lev.Lev
-	_, b := l.Backtrace("abc", "abd")
-	fmt.Printf("backtrace of %q and %q = %s", "abc", "abd", b)
+	_, b := l.Trace("abc", "abd")
+	fmt.Printf("trace of %q and %q = %s", "abc", "abd", b)
 }
 ```
 
@@ -48,7 +48,7 @@ import(
 
 func main() {
 	var l lev.Lev
-	a, _ := l.Alignment(l.Backtrace("abc", "abd"))
-	fmt.Printf("%s\n%s\%s\n", a.S1, a.Backtrace, a.S2)
+	a, _ := l.Alignment(l.Trace("abc", "abd"))
+	fmt.Printf("%s\n%s\%s\n", a.S1, a.Trace, a.S2)
 }
 ```
