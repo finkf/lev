@@ -20,7 +20,7 @@ func main() {
 	fmt.Printf("distance between %q and %q = %d", "abc", "abd", d)
 }
 ```
-### Calculate the backtrace
+### Calculate the backtrace of two strings
 ```golang
 package main
 
