@@ -5,10 +5,14 @@ Simple [go](https://golang.org) package to calculate the
 between two strings.
 
 ## Usage
+### Calculate edit distance between two strings
 ```golang
 package main
 
-import("github.com/finkf/lev")
+import(
+	"fmt"
+	"github.com/finkf/lev"
+)
 
 func main() {
 	var l lev.Lev
