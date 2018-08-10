@@ -1,6 +1,7 @@
 package lev_test
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/finkf/lev"
@@ -79,29 +80,30 @@ func TestTraceValidate(t *testing.T) {
 	}
 }
 
+func newAlignment(t, s1, s2 string, d int) lev.Alignment {
+	return lev.Alignment{
+		Trace:    []byte(t),
+		S1:       []rune(s1),
+		S2:       []rune(s2),
+		Distance: d,
+	}
+}
+
 func TestAlignment(t *testing.T) {
 	tests := []struct {
 		s1, s2 string
 		want   lev.Alignment
 	}{
-		{"", "", lev.Alignment{}},
-		{"abc", "abc", lev.Alignment{
-			Trace: "|||", S1: "abc", S2: "abc"}},
-		{"ab", "abc", lev.Alignment{
-			Trace: "||+", S1: "ab~", S2: "abc", Distance: 1}},
-		{"abc", "ab", lev.Alignment{
-			Trace: "||-", S1: "abc", S2: "ab~", Distance: 1}},
-		{"abc", "abd", lev.Alignment{
-			Trace: "||#", S1: "abc", S2: "abd", Distance: 1}},
-		{"", "abc", lev.Alignment{
-			Trace: "+++", S1: "~~~", S2: "abc", Distance: 3}},
-		{"abc", "", lev.Alignment{
-			Trace: "---", S1: "abc", S2: "~~~", Distance: 3}},
-		{"abc", "xyz", lev.Alignment{
-			Trace: "###", S1: "abc", S2: "xyz", Distance: 3}},
-		{"file://a.txt", "Der alte Mann", lev.Alignment{
-			Trace: "##+++|+|##-|##--", S1: "fi~~~l~e://a.txt",
-			S2: "Der alte M~ann~~", Distance: 13}},
+		{"", "", newAlignment("", "", "", 0)},
+		{"abc", "abc", newAlignment("|||", "abc", "abc", 0)},
+		{"ab", "abc", newAlignment("||+", "ab~", "abc", 1)},
+		{"abc", "ab", newAlignment("||-", "abc", "ab~", 1)},
+		{"abc", "abd", newAlignment("||#", "abc", "abd", 1)},
+		{"", "abc", newAlignment("+++", "~~~", "abc", 3)},
+		{"abc", "", newAlignment("---", "abc", "~~~", 3)},
+		{"abc", "xyz", newAlignment("###", "abc", "xyz", 3)},
+		{"file://a.txt", "Der alte Mann", newAlignment(
+			"##+++|+|##-|##--", "fi~~~l~e://a.txt", "Der alte M~ann~~", 13)},
 	}
 	for _, tc := range tests {
 		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
@@ -110,8 +112,8 @@ func TestAlignment(t *testing.T) {
 			if err != nil {
 				t.Fatalf("got error: %v", err)
 			}
-			if got != tc.want {
-				t.Fatalf("expected %v; got %v", tc.want, got)
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Fatalf("expected %q; got %q", tc.want, got)
 			}
 		})
 	}

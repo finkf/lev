@@ -180,44 +180,45 @@ func max(m, n int) int {
 // Alignment captures the alignment of two strings with
 // the accoriding trace of edit operations.
 type Alignment struct {
-	S1, S2, Trace string
-	Distance      int
+	S1, S2   []rune
+	Trace    Trace
+	Distance int
 }
 
 // Alignment returns the given alignment strings and the according
 // trace.
 func (l *Lev) Alignment(d int, b Trace) (Alignment, error) {
-	a := Alignment{Distance: d}
-	var b1, b2 bytes.Buffer
+	a := Alignment{Distance: d, Trace: b}
 	i, j := 0, 0
+	a.S1 = make([]rune, 0, len(l.s1))
+	a.S2 = make([]rune, 0, len(l.s2))
 	for _, c := range b {
 		switch c {
 		case Nop, Sub:
 			if i >= len(l.s1) || j >= len(l.s2) {
 				return l.alignmentError(b)
 			}
-			b1.WriteRune(l.s1[i])
-			b2.WriteRune(l.s2[j])
+			a.S1 = append(a.S1, l.s1[i])
+			a.S2 = append(a.S2, l.s2[j])
 			i, j = i+1, j+1
 		case Ins:
 			if j >= len(l.s2) {
 				return l.alignmentError(b)
 			}
-			b1.WriteByte(Mis)
-			b2.WriteRune(l.s2[j])
+			a.S1 = append(a.S1, rune(Mis))
+			a.S2 = append(a.S2, l.s2[j])
 			j++
 		case Del:
 			if i >= len(l.s1) {
 				return l.alignmentError(b)
 			}
-			b1.WriteRune(l.s1[i])
-			b2.WriteByte(Mis)
+			a.S1 = append(a.S1, l.s1[i])
+			a.S2 = append(a.S2, rune(Mis))
 			i++
 		default:
 			return l.alignmentError(b)
 		}
 	}
-	a.S1, a.S2, a.Trace = b1.String(), b2.String(), b.String()
 	return a, nil
 }
 
