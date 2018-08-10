@@ -81,12 +81,12 @@ func TestTraceValidate(t *testing.T) {
 }
 
 func newAlignment(t, s1, s2 string, d int) lev.Alignment {
-	return lev.Alignment{
-		Trace:    []byte(t),
-		S1:       []rune(s1),
-		S2:       []rune(s2),
-		Distance: d,
+	a, err := lev.NewAlignment(s1, s2, t)
+	if err != nil {
+		panic(err)
 	}
+	a.Distance = d
+	return a
 }
 
 func TestAlignment(t *testing.T) {

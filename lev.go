@@ -185,6 +185,25 @@ type Alignment struct {
 	Distance int
 }
 
+// NewAlignment creates a new Alignment from two and a given trace.
+// The error distance is calculated using the trace directly.
+func NewAlignment(s1, s2, trace string) (Alignment, error) {
+	a := Alignment{S1: []rune(s1), S2: []rune(s2), Trace: []byte(trace)}
+	if len(a.S1) != len(a.Trace) || len(a.S2) != len(a.Trace) {
+		return Alignment{}, fmt.Errorf("trace and/or string lengths do not match")
+	}
+	for _, op := range a.Trace {
+		switch op {
+		case Del, Ins, Sub:
+			a.Distance++
+		case Nop:
+		default:
+			return Alignment{}, fmt.Errorf("invalid trace: %s", a.Trace)
+		}
+	}
+	return a, nil
+}
+
 // Alignment returns the given alignment strings and the according
 // trace.
 func (l *Lev) Alignment(d int, b Trace) (Alignment, error) {
