@@ -108,9 +108,6 @@ func toRunes(str string) []rune {
 	return runes
 }
 
-// // EditOperation defines the type of an edit operation.
-// type EditOperation byte
-
 // Trace defines an array of edit operations.
 type Trace []byte
 
@@ -190,7 +187,8 @@ type Alignment struct {
 func NewAlignment(s1, s2, trace string) (Alignment, error) {
 	a := Alignment{S1: []rune(s1), S2: []rune(s2), Trace: []byte(trace)}
 	if len(a.S1) != len(a.Trace) || len(a.S2) != len(a.Trace) {
-		return Alignment{}, fmt.Errorf("trace and/or string lengths do not match")
+		return Alignment{},
+			fmt.Errorf("trace and/or string lengths do not match")
 	}
 	for _, op := range a.Trace {
 		switch op {
