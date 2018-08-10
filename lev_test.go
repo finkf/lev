@@ -1,6 +1,7 @@
 package lev_test
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 
@@ -136,6 +137,38 @@ func TestInvalidAlignment(t *testing.T) {
 			_, err := l.Alignment(d, tc.trace)
 			if err == nil {
 				t.Fatalf("expected error")
+			}
+		})
+	}
+}
+
+func TestNewAlignment(t *testing.T) {
+	tests := []struct {
+		s1, s2, trace string
+		err           error
+	}{
+		{"abc", "abd", "||#", nil},
+		{"~~~", "abc", "+++", nil},
+		{"abc", "~~~", "+++", nil},
+		{"abc", "abdd", "||##", errors.New("")},
+		{"abc", "abd", "||x", errors.New("")},
+	}
+	for _, tc := range tests {
+		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
+			a, err := lev.NewAlignment(tc.s1, tc.s2, tc.trace)
+			if tc.err != nil {
+				if err == nil {
+					t.Fatalf("expected error")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("got error: %v", err)
+			}
+			var l lev.Lev
+			d := l.EditDistance(tc.s1, tc.s2)
+			if d != a.Distance {
+				t.Fatalf("expected %d; got %d", d, a.Distance)
 			}
 		})
 	}
