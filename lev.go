@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"text/tabwriter"
-	"unicode/utf8"
 )
 
 // Lev holds two aligned strings and the weight matrix.
@@ -16,11 +15,7 @@ type Lev struct {
 // EditDistance calculates the minimal edit distance
 // between the two given strings.
 func (l *Lev) EditDistance(s1, s2 string) int {
-	l.s1 = toRunes(s1)
-	l.s2 = toRunes(s2)
-	m := len(l.s1)
-	n := len(l.s2)
-	l.reset(m+1, n+1)
+	m, n := l.init(s1, s2)
 	for i := 0; i < m+1; i++ {
 		l.set(i, 0, i)
 	}
@@ -98,14 +93,13 @@ func (l *Lev) String() string {
 	return buf.String()
 }
 
-// toRunes converts a string to an array of runes.
-func toRunes(str string) []rune {
-	n := utf8.RuneCountInString(str)
-	runes := make([]rune, 0, n)
-	for _, r := range str {
-		runes = append(runes, r)
-	}
-	return runes
+func (l *Lev) init(s1, s2 string) (int, int) {
+	l.s1 = []rune(s1)
+	l.s2 = []rune(s2)
+	m := len(l.s1)
+	n := len(l.s2)
+	l.reset(m+1, n+1)
+	return m, n
 }
 
 // Trace defines an array of edit operations.
