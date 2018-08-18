@@ -1,7 +1,6 @@
 language: go
 
 go:
-  - "1.x"
   - "1.8"
   - "1.10.x"
   - "1.11.x"
@@ -10,3 +9,10 @@ go:
 os
 	- linux
 	- osx
+
+install: true
+
+script:
+	-env GO111MODULE=on go build
+	-env GO111MODULE=on go test
+	-env GO111MODULE=on go vet
