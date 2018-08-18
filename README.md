@@ -21,7 +21,7 @@ func main() {
 }
 ```
 
-### Calculate the trace of two strings
+### Calculate the trace between two strings
 ```golang
 package main
 
@@ -37,7 +37,7 @@ func main() {
 }
 ```
 
-### Calculate the alignment of two strings
+### Calculate the alignment between two strings
 ```golang
 package main
 
