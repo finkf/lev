@@ -25,17 +25,17 @@ func (l WLev) EditDistance(a, b Array) int {
 	}
 	for i := 1; i < m+1; i++ {
 		for j := 1; j < n+1; j++ {
-			w := l.A.Weight(l.b, i, j)
-			if w == 0 {
-				l.set(i, j, l.at(i-1, j-1))
-			} else {
-				v, _, _, _ := l.argMin(i, j)
-				l.set(i, j, v)
-			}
+			// w := l.a.Weight(l.b, i, j)
+			// if w == 0 {
+			// 	l.set(i, j, l.at(i-1, j-1))
+			// } else {
+			// 	v, _, _, _ := l.argMin(i, j)
+			// 	l.set(i, j, v)
+			// }
 		}
 	}
 	// m = len(l.ws1) + 1, n = len(l.ws2) + 1
-	return l.at(len(l.s1), len(l.s2))
+	return l.at(l.a.Len(), l.b.Len())
 }
 
 func (l *WLev) init(a, b Array) (int, int) {
