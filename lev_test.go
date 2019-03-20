@@ -46,7 +46,7 @@ func TestTrace(t *testing.T) {
 		{"abc", "ac", "|-|"},
 		{"xxabc", "abc", "--|||"},
 		{"abc", "xxabc", "++|||"},
-		{"xabyx", "abc", "-||#-"},
+		{"xabyx", "abc", "-||-#"},
 	}
 	for _, tc := range tests {
 		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
@@ -104,7 +104,7 @@ func TestAlignment(t *testing.T) {
 		{"abc", "", newAlignment("---", "abc", "~~~", 3)},
 		{"abc", "xyz", newAlignment("###", "abc", "xyz", 3)},
 		{"file://a.txt", "Der alte Mann", newAlignment(
-			"##+++|+|##-|##--", "fi~~~l~e://a.txt", "Der alte M~ann~~", 13)},
+			"+############", "~file://a.txt", "Der alte Mann", 13)},
 	}
 	for _, tc := range tests {
 		t.Run(tc.s1+" "+tc.s2, func(t *testing.T) {
