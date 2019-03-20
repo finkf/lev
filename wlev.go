@@ -3,8 +3,11 @@ package lev
 // Array defines the interface to calculate the weighted levenshtein
 // distance and wagner-fisher algorithm.
 type Array interface {
-	Len() int                         // return the length of the array
-	Weight(a Array, i int, j int) int // return the weight between self[i] with a[j]
+	// return the length of the array
+	Len() int
+	// return the weight between self[i] with a[j].  If a is nil the
+	// weight between self and the empty word.
+	Weight(a Array, i int, j int) int
 }
 
 // WLev holds two aligned Arrays and the weight matrix.
@@ -17,11 +20,11 @@ type WLev struct {
 // given arrays.
 func (l WLev) EditDistance(a, b Array) int {
 	m, n := l.init(a, b)
-	for i := 0; i < m+1; i++ {
-		l.set(i, 0, i)
+	for i := 1; i < m+1; i++ {
+		l.set(i, 0, a.Weight(nil, i-1, 0))
 	}
-	for i := 0; i < n+1; i++ {
-		l.set(0, i, i)
+	for i := 1; i < n+1; i++ {
+		l.set(0, i, b.Weight(nil, i-1, 0))
 	}
 	for i := 1; i < m+1; i++ {
 		for j := 1; j < n+1; j++ {
@@ -56,6 +59,9 @@ func (s stringa) Len() int {
 }
 
 func (s stringa) Weight(o Array, i, j int) int {
+	if o == nil {
+		return len(s.strs[i])
+	}
 	a := o.(stringa)
 	return s.lev.EditDistance(s.strs[i], a.strs[j])
 }

@@ -13,7 +13,7 @@ func TestWLev(t *testing.T) {
 		{[]string{"a", "b", "c"}, []string{"a", "c"}, 1},
 		{[]string{"foo", "bar", "baz"}, []string{"foo", "baz", "bar"}, 2},
 		{[]string{}, []string{}, 0},
-		{[]string{}, []string{"a"}, 1},
+		{[]string{}, []string{"abc"}, 3},
 		{[]string{"xyz"}, []string{"aba"}, 3},
 	}
 	var lev Lev
