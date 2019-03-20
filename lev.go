@@ -130,14 +130,14 @@ const (
 // and the trace of the according edit operations.
 func (l *Lev) Trace(s1, s2 string) (int, Trace) {
 	d := l.EditDistance(s1, s2)
-	return d, l.calculateTrace()
+	return d, l.trace(l.cost)
 }
 
-func (l *Lev) calculateTrace() Trace {
-	length := max(len(l.s1), len(l.s2))
+func (ma *matrix) trace(c func(byte, int, int) int) Trace {
+	length := max(ma.m-1, ma.n-1)
 	b := make(Trace, 0, length)
-	for i, j := len(l.s1), len(l.s2); i > 0 || j > 0; {
-		_, ii, jj, op := l.argMin(i, j, l.cost)
+	for i, j := ma.m-1, ma.n-1; i > 0 || j > 0; {
+		_, ii, jj, op := ma.argMin(i, j, c)
 		b = append(b, op)
 		i = ii
 		j = jj
