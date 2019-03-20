@@ -40,10 +40,6 @@ func (ma *matrix) argMin(i, j int, c func(byte, int, int) int) (v, ii, jj int, o
 	if j < 1 {
 		return ma.at(i-1, j) + c(Del, i, -1), i - 1, j, Del
 	}
-	// // zero cost means that i-1, j-1 are the same
-	// if w == 0 {
-	// 	return ma.at(i-1, j-1), i - 1, j - 1, Nop
-	// }
 	csub := c(Sub, i, j)
 	sub := ma.at(i-1, j-1) + csub
 	ins := ma.at(i, j-1) + c(Ins, -1, j)
