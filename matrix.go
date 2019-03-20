@@ -39,8 +39,8 @@ func (ma *matrix) argMin(i, j int, c func(byte, int, int) int) (v, ii, jj int, o
 	sub := ma.at(i-1, j-1) + csub
 	ins := ma.at(i, j-1) + c(Ins, -1, j)
 	del := ma.at(i-1, j) + c(Del, i, -1)
-	if sub < ins {
-		if sub < del {
+	if sub <= ins {
+		if sub <= del {
 			if csub == 0 {
 				return sub, i - 1, j - 1, Nop
 			}
@@ -56,12 +56,13 @@ func (ma *matrix) argMin(i, j int, c func(byte, int, int) int) (v, ii, jj int, o
 
 func (ma *matrix) trace(c func(byte, int, int) int) Trace {
 	length := max(ma.m-1, ma.n-1)
-	b := make(Trace, 0, length)
-	for i, j := ma.m-1, ma.n-1; i > 0 || j > 0; {
+	trace := make(Trace, length)
+	for i, j, k := ma.m-1, ma.n-1, length; i > 0 || j > 0; {
 		_, ii, jj, op := ma.argMin(i, j, c)
-		b = append(b, op)
+		trace[k-1] = op
+		k--
 		i = ii
 		j = jj
 	}
-	return b.reverse()
+	return trace
 }
