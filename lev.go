@@ -40,21 +40,22 @@ func (l *Lev) EditDistance(s1, s2 string) int {
 	return l.at(len(l.s1), len(l.s2))
 }
 
-func (l *Lev) argMin(i, j, w int) (v, ii, jj int, op byte) {
+func (ma *matrix) argMin(i, j, w int) (v, ii, jj int, op byte) {
 	// no deletion or substitution possible
 	if i < 1 {
-		return l.at(i, j-1) + 1, i, j - 1, Ins
+		return ma.at(i, j-1) + 1, i, j - 1, Ins
 	}
 	// no insertion or substitution possible
 	if j < 1 {
-		return l.at(i-1, j) + 1, i - 1, j, Del
+		return ma.at(i-1, j) + 1, i - 1, j, Del
 	}
+	// zero weight means that i-1, j-1 are the same
 	if w == 0 {
-		return l.at(i-1, j-1), i - 1, j - 1, Nop
+		return ma.at(i-1, j-1), i - 1, j - 1, Nop
 	}
-	sub := l.at(i-1, j-1)
-	ins := l.at(i, j-1)
-	del := l.at(i-1, j)
+	sub := ma.at(i-1, j-1)
+	ins := ma.at(i, j-1)
+	del := ma.at(i-1, j)
 	if sub < ins {
 		if sub < del {
 			return sub + w, i - 1, j - 1, Sub
