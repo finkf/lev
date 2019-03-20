@@ -12,6 +12,7 @@ func TestWLevDistance(t *testing.T) {
 	}{
 		{[]string{"a", "b", "c"}, []string{"a", "c"}, 1},
 		{[]string{"foo", "bar", "baz"}, []string{"foo", "baz", "bar"}, 2},
+		{[]string{"foo", "bar", "baz"}, []string{"foo", "baz", "baz"}, 1},
 		{[]string{}, []string{}, 0},
 		{[]string{}, []string{"abc"}, 3},
 		{[]string{"xyz"}, []string{"aba"}, 3},
