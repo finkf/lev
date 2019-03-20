@@ -24,19 +24,26 @@ func (l *Lev) EditDistance(s1, s2 string) int {
 	}
 	for i := 1; i < m+1; i++ {
 		for j := 1; j < n+1; j++ {
+			w := 1
 			if l.s1[i-1] == l.s2[j-1] {
-				l.set(i, j, l.at(i-1, j-1))
-			} else {
-				v, _, _, _ := l.argMin(i, j)
-				l.set(i, j, v)
+				w = 0
 			}
+			v, _, _, _ := l.argMin(i, j, w)
+			l.set(i, j, v)
 		}
 	}
+	// 			l.set(i, j, l.at(i-1, j-1))
+	// 		} else {
+	// 			v, _, _, _ := l.argMin(i, j)
+	// 			l.set(i, j, v)
+	// 		}
+	// 	}
+	// }
 	// m = len(l.ws1) + 1, n = len(l.ws2) + 1
 	return l.at(len(l.s1), len(l.s2))
 }
 
-func (l *Lev) argMin(i, j int) (v, ii, jj int, op byte) {
+func (l *Lev) argMin(i, j, w int) (v, ii, jj int, op byte) {
 	// no deletion or substitution possible
 	if i < 1 {
 		return l.at(i, j-1) + 1, i, j - 1, Ins
@@ -45,7 +52,7 @@ func (l *Lev) argMin(i, j int) (v, ii, jj int, op byte) {
 	if j < 1 {
 		return l.at(i-1, j) + 1, i - 1, j, Del
 	}
-	if l.s1[i-1] == l.s2[j-1] {
+	if w == 0 {
 		return l.at(i-1, j-1), i - 1, j - 1, Nop
 	}
 	sub := l.at(i-1, j-1)
@@ -53,14 +60,14 @@ func (l *Lev) argMin(i, j int) (v, ii, jj int, op byte) {
 	del := l.at(i-1, j)
 	if sub < ins {
 		if sub < del {
-			return sub + 1, i - 1, j - 1, Sub
+			return sub + w, i - 1, j - 1, Sub
 		}
-		return del + 1, i - 1, j, Del
+		return del + w, i - 1, j, Del
 	}
 	if ins < del {
-		return ins + 1, i, j - 1, Ins
+		return ins + w, i, j - 1, Ins
 	}
-	return del + 1, i - 1, j, Del
+	return del + w, i - 1, j, Del
 }
 
 // String returns the matrix format of the last
@@ -130,7 +137,11 @@ func (l *Lev) calculateTrace() Trace {
 	b := make(Trace, 0, length)
 	// m = len(l.ws1) + 1, n = len(l.ws2) + 1
 	for i, j := len(l.s1), len(l.s2); i > 0 || j > 0; {
-		_, ii, jj, op := l.argMin(i, j)
+		w := 1
+		if i > 0 && j > 0 && l.s1[i-1] == l.s2[j-1] {
+			w = 0
+		}
+		_, ii, jj, op := l.argMin(i, j, w)
 		b = append(b, op)
 		i = ii
 		j = jj
