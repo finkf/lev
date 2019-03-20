@@ -18,7 +18,7 @@ type WLev struct {
 }
 
 // EditDistance returns the cost between the two given arrays.
-func (l WLev) EditDistance(a, b Array) int {
+func (l *WLev) EditDistance(a, b Array) int {
 	m, n := l.init(a, b)
 	for i := 1; i < m+1; i++ {
 		l.set(i, 0, a.Cost(nil, i-1, -1))
