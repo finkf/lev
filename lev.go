@@ -6,7 +6,7 @@ import (
 	"text/tabwriter"
 )
 
-// Lev holds two aligned strings and the weight matrix.
+// Lev holds two aligned strings and the cost matrix.
 type Lev struct {
 	matrix
 	s1, s2 []rune
@@ -24,33 +24,33 @@ func (l *Lev) EditDistance(s1, s2 string) int {
 	}
 	for i := 1; i < m+1; i++ {
 		for j := 1; j < n+1; j++ {
-			v, _, _, _ := l.argMin(i, j, l.weight)
+			v, _, _, _ := l.argMin(i, j, l.cost)
 			l.set(i, j, v)
 		}
 	}
 	return l.at(len(l.s1), len(l.s2))
 }
 
-func (ma *matrix) argMin(i, j int, w func(byte, int, int) int) (v, ii, jj int, op byte) {
+func (ma *matrix) argMin(i, j int, c func(byte, int, int) int) (v, ii, jj int, op byte) {
 	// no deletion or substitution possible
 	if i < 1 {
-		return ma.at(i, j-1) + w(Ins, -1, j), i, j - 1, Ins
+		return ma.at(i, j-1) + c(Ins, -1, j), i, j - 1, Ins
 	}
 	// no insertion or substitution possible
 	if j < 1 {
-		return ma.at(i-1, j) + w(Del, i, -1), i - 1, j, Del
+		return ma.at(i-1, j) + c(Del, i, -1), i - 1, j, Del
 	}
-	// // zero weight means that i-1, j-1 are the same
+	// // zero cost means that i-1, j-1 are the same
 	// if w == 0 {
 	// 	return ma.at(i-1, j-1), i - 1, j - 1, Nop
 	// }
-	wsub := w(Sub, i, j)
-	sub := ma.at(i-1, j-1) + wsub
-	ins := ma.at(i, j-1) + w(Ins, -1, j)
-	del := ma.at(i-1, j) + w(Del, i, -1)
+	csub := c(Sub, i, j)
+	sub := ma.at(i-1, j-1) + csub
+	ins := ma.at(i, j-1) + c(Ins, -1, j)
+	del := ma.at(i-1, j) + c(Del, i, -1)
 	if sub < ins {
 		if sub < del {
-			if wsub == 0 {
+			if csub == 0 {
 				return sub, i - 1, j - 1, Nop
 			}
 			return sub, i - 1, j - 1, Sub
@@ -63,7 +63,7 @@ func (ma *matrix) argMin(i, j int, w func(byte, int, int) int) (v, ii, jj int, o
 	return del, i - 1, j, Del
 }
 
-func (l *Lev) weight(op byte, i, j int) int {
+func (l *Lev) cost(op byte, i, j int) int {
 	switch op {
 	case Del, Ins:
 		return 1
@@ -141,7 +141,7 @@ func (l *Lev) calculateTrace() Trace {
 	length := max(len(l.s1), len(l.s2))
 	b := make(Trace, 0, length)
 	for i, j := len(l.s1), len(l.s2); i > 0 || j > 0; {
-		_, ii, jj, op := l.argMin(i, j, l.weight)
+		_, ii, jj, op := l.argMin(i, j, l.cost)
 		b = append(b, op)
 		i = ii
 		j = jj
