@@ -29,14 +29,6 @@ func (l *Lev) EditDistance(s1, s2 string) int {
 			l.set(i, j, v)
 		}
 	}
-	// 			l.set(i, j, l.at(i-1, j-1))
-	// 		} else {
-	// 			v, _, _, _ := l.argMin(i, j)
-	// 			l.set(i, j, v)
-	// 		}
-	// 	}
-	// }
-	// m = len(l.ws1) + 1, n = len(l.ws2) + 1
 	return l.at(len(l.s1), len(l.s2))
 }
 
@@ -140,12 +132,8 @@ func (l *Lev) Trace(s1, s2 string) (int, Trace) {
 func (l *Lev) calculateTrace() Trace {
 	length := max(len(l.s1), len(l.s2))
 	b := make(Trace, 0, length)
-	// m = len(l.ws1) + 1, n = len(l.ws2) + 1
 	for i, j := len(l.s1), len(l.s2); i > 0 || j > 0; {
 		w := l.weight(i-1, j-1)
-		// if i > 0 && j > 0 && l.s1[i-1] == l.s2[j-1] {
-		// 	w = 0
-		// }
 		_, ii, jj, op := l.argMin(i, j, w)
 		b = append(b, op)
 		i = ii
