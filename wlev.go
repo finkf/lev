@@ -25,16 +25,11 @@ func (l WLev) EditDistance(a, b Array) int {
 	}
 	for i := 1; i < m+1; i++ {
 		for j := 1; j < n+1; j++ {
-			// w := l.a.Weight(l.b, i, j)
-			// if w == 0 {
-			// 	l.set(i, j, l.at(i-1, j-1))
-			// } else {
-			// 	v, _, _, _ := l.argMin(i, j)
-			// 	l.set(i, j, v)
-			// }
+			w := l.a.Weight(l.b, i-1, j-1)
+			v, _, _, _ := l.argMin(i, j, w)
+			l.set(i, j, v)
 		}
 	}
-	// m = len(l.ws1) + 1, n = len(l.ws2) + 1
 	return l.at(l.a.Len(), l.b.Len())
 }
 
@@ -46,3 +41,23 @@ func (l *WLev) init(a, b Array) (int, int) {
 	l.reset(m+1, n+1)
 	return m, n
 }
+
+func StringArray(l *Lev, args ...string) Array {
+	return stringa{l, args}
+}
+
+type stringa struct {
+	lev  *Lev
+	strs []string
+}
+
+func (s stringa) Len() int {
+	return len(s.strs)
+}
+
+func (s stringa) Weight(o Array, i, j int) int {
+	a := o.(stringa)
+	return s.lev.EditDistance(s.strs[i], a.strs[j])
+}
+
+var _ Array = stringa{}
