@@ -24,47 +24,55 @@ func (l *Lev) EditDistance(s1, s2 string) int {
 	}
 	for i := 1; i < m+1; i++ {
 		for j := 1; j < n+1; j++ {
-			w := l.weight(i-1, j-1)
-			v, _, _, _ := l.argMin(i, j, w)
+			v, _, _, _ := l.argMin(i, j, l.weight)
 			l.set(i, j, v)
 		}
 	}
 	return l.at(len(l.s1), len(l.s2))
 }
 
-func (ma *matrix) argMin(i, j, w int) (v, ii, jj int, op byte) {
+func (ma *matrix) argMin(i, j int, w func(byte, int, int) int) (v, ii, jj int, op byte) {
 	// no deletion or substitution possible
 	if i < 1 {
-		return ma.at(i, j-1) + 1, i, j - 1, Ins
+		return ma.at(i, j-1) + w(Ins, -1, j), i, j - 1, Ins
 	}
 	// no insertion or substitution possible
 	if j < 1 {
-		return ma.at(i-1, j) + 1, i - 1, j, Del
+		return ma.at(i-1, j) + w(Del, i, -1), i - 1, j, Del
 	}
-	// zero weight means that i-1, j-1 are the same
-	if w == 0 {
-		return ma.at(i-1, j-1), i - 1, j - 1, Nop
-	}
-	sub := ma.at(i-1, j-1)
-	ins := ma.at(i, j-1)
-	del := ma.at(i-1, j)
+	// // zero weight means that i-1, j-1 are the same
+	// if w == 0 {
+	// 	return ma.at(i-1, j-1), i - 1, j - 1, Nop
+	// }
+	wsub := w(Sub, i, j)
+	sub := ma.at(i-1, j-1) + wsub
+	ins := ma.at(i, j-1) + w(Ins, -1, j)
+	del := ma.at(i-1, j) + w(Del, i, -1)
 	if sub < ins {
 		if sub < del {
-			return sub + w, i - 1, j - 1, Sub
+			if wsub == 0 {
+				return sub, i - 1, j - 1, Nop
+			}
+			return sub, i - 1, j - 1, Sub
 		}
-		return del + w, i - 1, j, Del
+		return del, i - 1, j, Del
 	}
 	if ins < del {
-		return ins + w, i, j - 1, Ins
+		return ins, i, j - 1, Ins
 	}
-	return del + w, i - 1, j, Del
+	return del, i - 1, j, Del
 }
 
-func (l *Lev) weight(i, j int) int {
-	if i >= 0 && j >= 0 && l.s1[i] == l.s2[j] {
-		return 0
+func (l *Lev) weight(op byte, i, j int) int {
+	switch op {
+	case Del, Ins:
+		return 1
+	default:
+		if l.s1[i-1] == l.s2[j-1] {
+			return 0
+		}
+		return 1
 	}
-	return 1
 }
 
 // String returns the matrix format of the last
@@ -133,8 +141,7 @@ func (l *Lev) calculateTrace() Trace {
 	length := max(len(l.s1), len(l.s2))
 	b := make(Trace, 0, length)
 	for i, j := len(l.s1), len(l.s2); i > 0 || j > 0; {
-		w := l.weight(i-1, j-1)
-		_, ii, jj, op := l.argMin(i, j, w)
+		_, ii, jj, op := l.argMin(i, j, l.weight)
 		b = append(b, op)
 		i = ii
 		j = jj

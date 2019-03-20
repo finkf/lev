@@ -3,10 +3,11 @@ package lev
 // Array defines the interface to calculate the weighted levenshtein
 // distance and wagner-fisher algorithm.
 type Array interface {
-	// return the length of the array
+	// Return the length of the array
 	Len() int
-	// return the weight between self[i] with a[j].  If a is nil the
-	// weight between self and the empty word.
+	// Return the weight between self[i] with a[j].  If `a` is nil
+	// this method should return the weight for an insertion or
+	// deletion at i.
 	Weight(a Array, i int, j int) int
 }
 
@@ -21,15 +22,14 @@ type WLev struct {
 func (l WLev) EditDistance(a, b Array) int {
 	m, n := l.init(a, b)
 	for i := 1; i < m+1; i++ {
-		l.set(i, 0, a.Weight(nil, i-1, 0))
+		l.set(i, 0, a.Weight(nil, i-1, -1))
 	}
 	for i := 1; i < n+1; i++ {
-		l.set(0, i, b.Weight(nil, i-1, 0))
+		l.set(0, i, b.Weight(nil, i-1, -1))
 	}
 	for i := 1; i < m+1; i++ {
 		for j := 1; j < n+1; j++ {
-			w := l.a.Weight(l.b, i-1, j-1)
-			v, _, _, _ := l.argMin(i, j, w)
+			v, _, _, _ := l.argMin(i, j, l.weight)
 			l.set(i, j, v)
 		}
 	}
@@ -43,6 +43,17 @@ func (l *WLev) init(a, b Array) (int, int) {
 	n := b.Len()
 	l.reset(m+1, n+1)
 	return m, n
+}
+
+func (l *WLev) weight(op byte, i, j int) int {
+	switch op {
+	case Del:
+		return l.a.Weight(nil, i-1, -1)
+	case Ins:
+		return l.b.Weight(nil, j-1, -1)
+	default:
+		return l.a.Weight(l.b, i-1, j-1)
+	}
 }
 
 func StringArray(l *Lev, args ...string) Array {
