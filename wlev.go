@@ -35,6 +35,13 @@ func (l *WLev) EditDistance(a, b Array) int {
 	return l.at(l.a.Len(), l.b.Len())
 }
 
+// Trace returns the edit distance between the two given strings
+// and the trace of the according edit operations.
+func (l *WLev) Trace(a, b Array) (int, Trace) {
+	d := l.EditDistance(a, b)
+	return d, l.trace(l.cost)
+}
+
 func (l *WLev) init(a, b Array) (int, int) {
 	l.a = a
 	l.b = b
