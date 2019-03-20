@@ -24,10 +24,7 @@ func (l *Lev) EditDistance(s1, s2 string) int {
 	}
 	for i := 1; i < m+1; i++ {
 		for j := 1; j < n+1; j++ {
-			w := 1
-			if l.s1[i-1] == l.s2[j-1] {
-				w = 0
-			}
+			w := l.weight(i-1, j-1)
 			v, _, _, _ := l.argMin(i, j, w)
 			l.set(i, j, v)
 		}
@@ -68,6 +65,13 @@ func (l *Lev) argMin(i, j, w int) (v, ii, jj int, op byte) {
 		return ins + w, i, j - 1, Ins
 	}
 	return del + w, i - 1, j, Del
+}
+
+func (l *Lev) weight(i, j int) int {
+	if i >= 0 && j >= 0 && l.s1[i] == l.s2[j] {
+		return 0
+	}
+	return 1
 }
 
 // String returns the matrix format of the last
@@ -137,10 +141,10 @@ func (l *Lev) calculateTrace() Trace {
 	b := make(Trace, 0, length)
 	// m = len(l.ws1) + 1, n = len(l.ws2) + 1
 	for i, j := len(l.s1), len(l.s2); i > 0 || j > 0; {
-		w := 1
-		if i > 0 && j > 0 && l.s1[i-1] == l.s2[j-1] {
-			w = 0
-		}
+		w := l.weight(i-1, j-1)
+		// if i > 0 && j > 0 && l.s1[i-1] == l.s2[j-1] {
+		// 	w = 0
+		// }
 		_, ii, jj, op := l.argMin(i, j, w)
 		b = append(b, op)
 		i = ii
