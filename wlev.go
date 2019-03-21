@@ -7,7 +7,7 @@ type Array interface {
 	Len() int
 	// Return the cost between self[i] with a[j].  If `a` is nil this
 	// method should return the cost for an insertion or deletion at
-	// `i`.
+	// `i` (`j` is set to -1 in theses cases).
 	Cost(a Array, i int, j int) int
 }
 
@@ -62,6 +62,10 @@ func (l *WLev) cost(op byte, i, j int) int {
 	}
 }
 
+// StringArray returns an array of words (or sentences...).  The array
+// can be used to align words using Wagner-Fischer.  Costs calculated
+// by the Array are based on the Levenshtein-Distance between the
+// Array's tokens.
 func StringArray(l *Lev, args ...string) Array {
 	return stringa{l, args}
 }
