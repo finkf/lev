@@ -121,13 +121,6 @@ func (b Trace) String() string {
 	return string(b)
 }
 
-func max(m, n int) int {
-	if m > n {
-		return m
-	}
-	return n
-}
-
 // Alignment captures the alignment of two strings with
 // the accoriding trace of edit operations.
 type Alignment struct {

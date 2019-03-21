@@ -66,3 +66,10 @@ func (ma *matrix) trace(c func(byte, int, int) int) Trace {
 	}
 	return trace
 }
+
+func max(m, n int) int {
+	if m > n {
+		return m
+	}
+	return n
+}
