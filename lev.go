@@ -161,8 +161,9 @@ func NewAlignment(s1, s2, trace string) (Alignment, error) {
 func (l *Lev) Alignment(d int, b Trace) (Alignment, error) {
 	a := Alignment{Distance: d, Trace: b}
 	i, j := 0, 0
-	a.S1 = make([]rune, 0, len(l.s1))
-	a.S2 = make([]rune, 0, len(l.s2))
+	n := max(len(l.s1), len(l.s2))
+	a.S1 = make([]rune, 0, n)
+	a.S2 = make([]rune, 0, n)
 	for _, c := range b {
 		switch c {
 		case Nop, Sub:
