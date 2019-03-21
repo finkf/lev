@@ -56,13 +56,15 @@ func (ma *matrix) argMin(i, j int, c func(byte, int, int) int) (v, ii, jj int, o
 
 func (ma *matrix) trace(c func(byte, int, int) int) Trace {
 	length := max(ma.m-1, ma.n-1)
-	trace := make(Trace, length)
-	for i, j, k := ma.m-1, ma.n-1, length; i > 0 || j > 0; {
+	trace := make(Trace, 0, length)
+	for i, j := ma.m-1, ma.n-1; i > 0 || j > 0; {
 		_, ii, jj, op := ma.argMin(i, j, c)
-		trace[k-1] = op
-		k--
+		trace = append(trace, op) //trace[k-1] = op
 		i = ii
 		j = jj
+	}
+	for i, j := 0, len(trace)-1; i < j; i, j = i+1, j-1 {
+		trace[i], trace[j] = trace[j], trace[i]
 	}
 	return trace
 }
