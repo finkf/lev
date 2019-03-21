@@ -21,7 +21,7 @@ func TestWLevDistance(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("%v-%v", tc.a, tc.b), func(t *testing.T) {
 			var wlev WLev
-			a, b := StringArray(&lev, tc.a...), StringArray(&lev, tc.b...)
+			a, b := NewStringArray(&lev, tc.a...), NewStringArray(&lev, tc.b...)
 			if got := wlev.EditDistance(a, b); got != tc.want {
 				t.Fatalf("expected edit distance %d; got %d", tc.want, got)
 			}
@@ -45,7 +45,7 @@ func TestWLevTrace(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("%v-%v", tc.a, tc.b), func(t *testing.T) {
 			var wlev WLev
-			a, b := StringArray(&lev, tc.a...), StringArray(&lev, tc.b...)
+			a, b := NewStringArray(&lev, tc.a...), NewStringArray(&lev, tc.b...)
 			if _, got := wlev.Trace(a, b); string(got) != tc.want {
 				t.Fatalf("expected edit distance %q; got %q", tc.want, string(got))
 			}

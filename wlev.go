@@ -62,29 +62,39 @@ func (l *WLev) cost(op byte, i, j int) int {
 	}
 }
 
-// StringArray returns an array of words (or sentences...).  The array
-// can be used to align words using Wagner-Fischer.  Costs calculated
-// by the Array are based on the Levenshtein-Distance between the
-// Array's tokens.
-func StringArray(l *Lev, args ...string) Array {
-	return stringa{l, args}
+// NewStringArray returns an array of words (or sentences...).  The
+// array can be used to align words using Wagner-Fischer.  Costs
+// calculated by the Array are based on the Levenshtein-Distance
+// between the Array's tokens.
+func NewStringArray(l *Lev, args ...string) StringArray {
+	return StringArray{l, args}
 }
 
-type stringa struct {
+// StringArray holds a list of strings.  It implements the Array
+// interface.
+type StringArray struct {
 	lev  *Lev
 	strs []string
 }
 
-func (s stringa) Len() int {
+// Len returns the length of this string Array.
+func (s StringArray) Len() int {
 	return len(s.strs)
 }
 
-func (s stringa) Cost(o Array, i, j int) int {
+// Cost returns the costs between entries in the StringArray using the
+// Levenshtein-Distance.
+func (s StringArray) Cost(o Array, i, j int) int {
 	if o == nil {
 		return len(s.strs[i])
 	}
-	a := o.(stringa)
+	a := o.(StringArray)
 	return s.lev.EditDistance(s.strs[i], a.strs[j])
 }
 
-var _ Array = stringa{}
+// At returns the string at position `i`.
+func (s StringArray) At(i int) string {
+	return s.strs[i]
+}
+
+var _ Array = StringArray{}
