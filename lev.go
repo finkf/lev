@@ -187,6 +187,22 @@ func (l *Lev) Alignment(d int, b Trace) (Alignment, error) {
 	return a, nil
 }
 
+func Align(trace Trace, f func(op byte, i, j int)) {
+	for i, j, k := 0, 0, 0; i < len(trace); i++ {
+		switch op := trace[i]; op {
+		case Nop, Sub:
+			f(op, j, k)
+			j, k = j+1, k+1
+		case Ins:
+			f(op, -1, k)
+			k++
+		case Del:
+			f(op, j, -1)
+			j++
+		}
+	}
+}
+
 func (l *Lev) alignmentError(b Trace) (Alignment, error) {
 	var a Alignment
 	return a, fmt.Errorf("align %q, %q: %q",
