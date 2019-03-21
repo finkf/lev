@@ -21,10 +21,10 @@ type WLev struct {
 func (l *WLev) EditDistance(a, b Array) int {
 	m, n := l.init(a, b)
 	for i := 1; i < m+1; i++ {
-		l.set(i, 0, a.Cost(nil, i-1, -1))
+		l.set(i, 0, a.Cost(nil, i-1, -1)+l.at(i-1, 0))
 	}
 	for i := 1; i < n+1; i++ {
-		l.set(0, i, b.Cost(nil, i-1, -1))
+		l.set(0, i, b.Cost(nil, i-1, -1)+l.at(0, i-1))
 	}
 	for i := 1; i < m+1; i++ {
 		for j := 1; j < n+1; j++ {
